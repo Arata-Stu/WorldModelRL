@@ -56,7 +56,7 @@ data.num_workers=10
 ### データをエンコード
 ```shell
 python3 encode_dataset.py \
-model/vae=cnn
+model/vae=cnn \
 data_dir ./datasets/car-racing \
 output_dir ./datasets/car-racing 
 ```
@@ -71,6 +71,6 @@ python3 test_vae.py +vae=cnn.yaml +mode=manual vae.ckpt_path=<ckpt_path>
 ```shell
 python3 train_actor.py vae=cnn buffer=off_policy agent=sac \
 vae.ckpt_path=./ckpts/<ckpt_path> \
-save_ckpt_dir=./ckpts/<ckpt_dir_name>/
+save_ckpt_dir=./ckpts/<ckpt_dir_name> \
 envs.render_mode=rgb_array
 ```
