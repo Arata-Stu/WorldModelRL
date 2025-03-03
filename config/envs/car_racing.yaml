@@ -1,3 +1,6 @@
+defaults:
+  - default
+  
 name: CarRacing-v3
 render_mode: human
 num_steps: 1000
