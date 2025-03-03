@@ -46,7 +46,7 @@ def encode_and_update_h5(vae, data_dir, output_dir, device="cpu"):
 def main(cfg: DictConfig):
     print(OmegaConf.to_yaml(cfg))
     
-    vae_cfg = OmegaConf.load(cfg.vae)
+    vae_cfg = OmegaConf.load(cfg.model.vae)
     vae = get_vae(vae_cfg=vae_cfg)
     vae.eval()
     
