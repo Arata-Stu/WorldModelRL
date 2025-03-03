@@ -60,6 +60,8 @@ data.batch_size=64
 data.img_size=64
 ```
 
+## 3. MDN RNNを学習させる
+
 ### データをエンコード
 ```shell
 python3 encode_dataset.py \
@@ -69,11 +71,14 @@ output_dir=./datasets/car-racing
 model.vae.ckpt_path=<ckpt>
 ```
 
-### VAEの評価
+### 学習
 ```shell
-cd test
-python3 test_vae.py +vae=cnn.yaml +mode=manual vae.ckpt_path=<ckpt_path>
+python3 train_mdn.py \
+data=mdn \
+data.data_dir=./datasets/<data_dir>
 ```
+
+
 
 ### 3. 強化学習
 ```shell
