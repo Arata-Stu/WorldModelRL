@@ -1,13 +1,14 @@
 import numpy as np
 import torch
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 from lightning.pytorch.callbacks import ModelCheckpoint
+from lightning.pytorch.loggers import TensorBoardLogger
 import hydra
 from omegaconf import DictConfig, OmegaConf
 
 from src.models.MDN.mdnrnn import MDNRNN
 from src.data.dataset import get_data_module 
-from lightning.pytorch.loggers import TensorBoardLogger
+
 
 class MDNRNNModule(pl.LightningModule):
     """
