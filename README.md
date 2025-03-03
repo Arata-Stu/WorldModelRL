@@ -26,10 +26,10 @@ source gym_env/bin/activate
 ### 2-1. スクラッチからCOCOで学習
 ```shell
 python3 train_vae.py \
-data=gym_img \
+data=coco \
 model/vae=cnn \
-save_ckpt_dir=./ckpts/scratch_cnn_vae/ \
-data.data_dir=./data/car-racing/ 
+save_ckpt_dir=./ckpts/coco_cnn_vae/ \
+data.data_dir=./datasets/coco/ 
 data.num_workers=10 
 ```
 
@@ -48,8 +48,8 @@ python3 collect_data.py \
 python3 train_vae.py \
 model/vae=cnn \
 data=gym_img \
-save_ckpt_dir=./ckpts/<ckpt_dir_name>/ \
-data.data_dir=./datasets/<dataset_name>/ \
+save_ckpt_dir=./ckpts/car-racing_cnn/ \
+data.data_dir=./datasets/car-racing/ \
 data.num_workers=10 
 ```
 
@@ -57,8 +57,8 @@ data.num_workers=10
 ```shell
 python3 encode_dataset.py \
 model/vae=cnn
-data_dir ./datasets/<dir_name> \
-output_dir ./datasets/<dir_name> \
+data_dir ./datasets/car-racing \
+output_dir ./datasets/car-racing \
 ```
 
 ### VAEの評価
