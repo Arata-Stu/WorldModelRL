@@ -106,9 +106,6 @@ def main(config: DictConfig):
                        mask_ratio=config.mask_ratio,
                        patch_size=config.patch_size)
     
-    if config.vae.ckpt_path is not None:
-        model = model.load_from_checkpoint(config.model.vae.ckpt_path)
-
     checkpoint_callback = ModelCheckpoint(
         dirpath=config.save_ckpt_dir,
         filename="{epoch:02d}-{val_loss:.4f}",
