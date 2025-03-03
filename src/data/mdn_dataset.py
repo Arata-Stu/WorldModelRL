@@ -1,10 +1,8 @@
 import os
-import numpy as np
+import h5py
 import torch
 from torch.utils.data import Dataset, DataLoader
-
 import pytorch_lightning as pl
-
 
 class MDNRNNDataset(Dataset):
     """
@@ -14,19 +12,22 @@ class MDNRNNDataset(Dataset):
     def __init__(self, data_dir, seq_length=20):
         """
         Args:
-            data_dir (str): npz ファイルが格納されたディレクトリ
+            data_dir (str): h5 ファイルが格納されたディレクトリ
             seq_length (int): RNN に入力する時系列の長さ
         """
-        self.data_paths = sorted([os.path.join(data_dir, f) for f in os.listdir(data_dir) if f.endswith(".npz")])
+        self.data_paths = sorted([os.path.join(data_dir, f) for f in os.listdir(data_dir) if f.endswith(".h5")])
         self.seq_length = seq_length
         self.sequences = []
 
-        # 各 npz ファイルをロードしてデータを収集
+        # 各 h5 ファイルをロードしてデータを収集
         for file_path in self.data_paths:
-            data = np.load(file_path)
-            latent = data["latent"]  # (steps, latent_dim)
-            actions = data["actions"]  # (steps, action_dim)
-            data.close()
+            with h5py.File(file_path, 'r') as f:
+                if "latent" not in f or "actions" not in f:
+                    print(f"Skipping {file_path}, missing latent or actions data.")
+                    continue
+                
+                latent = f["latent"][()]  # (steps, latent_dim)
+                actions = f["actions"][()]  # (steps, action_dim)
 
             # RNN の学習に適した時系列のデータを作成
             num_sequences = len(latent) - seq_length
@@ -58,6 +59,9 @@ class MDNRNNDataModule(pl.LightningDataModule):
 
     def setup(self, stage=None):
         dataset = MDNRNNDataset(self.data_dir, self.seq_length)
+        
+        if len(dataset) == 0:
+            raise ValueError("No valid h5 datasets found in the specified directory.")
 
         # 80% を学習用、20% をバリデーション用に分割
         train_size = int(0.8 * len(dataset))
