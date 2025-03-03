@@ -20,7 +20,7 @@ def collect_and_save_data(args):
         
         done = False
         step = 0
-        while not done and step < args.max_steps:
+        while not done and step < args.num_steps:
             # ランダムに行動を選択
             action = env.action_space.sample()
             obs, reward, terminated, truncated, info = env.step(action)
