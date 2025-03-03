@@ -1,4 +1,0 @@
-defaults:
-  - model/vae: ???
-  - model/mdn: mdnrnn
-  - model/controller: controller
