@@ -57,8 +57,8 @@ data.num_workers=10
 ```shell
 python3 encode_dataset.py \
 model/vae=cnn \
-data_dir ./datasets/car-racing \
-output_dir ./datasets/car-racing 
+data_dir=./datasets/car-racing \
+output_dir=./datasets/car-racing 
 ```
 
 ### VAEの評価
