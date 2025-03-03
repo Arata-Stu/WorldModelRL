@@ -29,7 +29,7 @@ python3 train_vae.py \
 data=gym_img \
 model/vae=cnn \
 save_ckpt_dir=./ckpts/scratch_cnn_vae/ \
-data.data_dir=./data/car_racing/ 
+data.data_dir=./data/car-racing/ 
 data.num_workers=10 
 ```
 
@@ -40,7 +40,7 @@ data.num_workers=10
 python3 collect_data.py \
 --num_episodes 10 \
 --num_steps 1000 \
---output_dir ./data/vae_train \
+--output_dir ./data/car-racing \
 ```
 
 ### 集めたデータで学習
@@ -56,9 +56,9 @@ data.num_workers=10
 ### データをエンコード
 ```shell
 python3 encode_dataset.py \
---data_dir ./datasets/<dir_name> \
---output_dir ./datasets/<dir_name> \
---vae_yaml_path ./config/model/vae/cnn.yaml
+model/vae=cnn
+data_dir ./datasets/<dir_name> \
+output_dir ./datasets/<dir_name> \
 ```
 
 ### VAEの評価
