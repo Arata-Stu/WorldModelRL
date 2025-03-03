@@ -10,6 +10,18 @@ from src.models.MDN.mdnrnn import MDNRNN
 from src.data.dataset import get_data_module 
 
 
+import numpy as np
+import torch
+import lightning.pytorch as pl
+from lightning.pytorch.callbacks import ModelCheckpoint
+from lightning.pytorch.loggers import TensorBoardLogger
+import hydra
+from omegaconf import DictConfig, OmegaConf
+
+from src.models.MDN.mdnrnn import MDNRNN
+from src.data.dataset import get_data_module 
+
+
 class MDNRNNModule(pl.LightningModule):
     """
     PyTorch Lightning を用いた MDN-RNN のトレーニングモジュール
@@ -54,30 +66,43 @@ class MDNRNNModule(pl.LightningModule):
         latent_seq, action_seq, target_z = batch
         pi, mu, sigma, _ = self(latent_seq, action_seq)
 
-        loss = self.mdn_loss(pi, mu, sigma, target_z)
+        loss = self.model.loss(target_z, pi, mu, sigma)
         self.log("train_loss", loss, prog_bar=True)
         return loss
+
 
     def validation_step(self, batch, batch_idx):
         latent_seq, action_seq, target_z = batch
         pi, mu, sigma, _ = self(latent_seq, action_seq)
         
-        loss = self.mdn_loss(pi, mu, sigma, target_z)
+        loss = self.mdn_loss(target_z, pi, mu, sigma)
         self.log("val_loss", loss, prog_bar=True)
         return loss
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
 
-    def mdn_loss(self, pi, mu, sigma, target_z):
+    def mdn_loss(self, y, pi, mu, sigma):
         """
         MDN の負の対数尤度 (Negative Log Likelihood) 損失関数
         """
-        target_z = target_z.unsqueeze(2)  # (batch, seq_length, 1, latent_dim)
-        prob = torch.exp(-0.5 * ((target_z - mu) / sigma) ** 2) / (sigma * (2 * np.pi) ** 0.5)
-        prob_weighted = pi * torch.prod(prob, dim=-1)
-        loss = -torch.log(torch.sum(prob_weighted, dim=-1) + 1e-8)
-        return loss.mean()
+        # target の次元を混合成分の次元に合わせる
+        y = y.unsqueeze(2).expand_as(sigma)  # (batch, seq_len, num_mixtures, latent_dim)
+        
+        # 正規分布の計算
+        one_div_sqrt_2pi = 1.0 / np.sqrt(2.0 * np.pi)
+        exponent = -0.5 * ((y - mu) / sigma) ** 2
+        gaussian = (torch.exp(exponent) / sigma) * one_div_sqrt_2pi  # 確率密度
+        
+        # 各混合成分の確率密度に pi をかけて合計
+        out = torch.sum(pi * torch.prod(gaussian, dim=-1), dim=-1)  # (batch, seq_len)
+
+        # 数値安定性のための処理
+        out = torch.clamp(out, min=1e-8)
+        loss = -torch.log(out).mean()
+
+        return loss
+
 
 
 @hydra.main(config_path="config", config_name="train_mdn", version_base="1.2")

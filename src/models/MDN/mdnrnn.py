@@ -47,6 +47,11 @@ class MDNRNN(nn.Module):
             elif 'bias' in name:
                 param.data.fill_(0)
     
+    def loss(self, y, pi, mu, sigma):
+        """MDN の損失関数を MDNRNN から直接呼べるようにする"""
+        return self.mdn.loss(y, pi, mu, sigma)
+
+    
     def load_weights(self, path: str, strict: bool = True):
         if path.endswith(".pth"):
             state_dict = torch.load(path, map_location=self.device)

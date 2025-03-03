@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 from typing import Tuple
 
 class MDN(nn.Module):
@@ -19,6 +20,8 @@ class MDN(nn.Module):
         self.num_mixtures = num_mixtures
         self.mdn_output_dim = num_mixtures * (1 + 2 * latent_dim)
         self.fc = nn.Linear(input_dim, self.mdn_output_dim)
+
+        self.oneDivSqrtTwoPI = 1.0 / np.sqrt(2.0*np.pi)
     
     def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
@@ -79,4 +82,26 @@ class MDN(nn.Module):
         eps = torch.randn_like(mu_selected)
         sample = mu_selected + sigma_selected * eps
         return sample
+    
+    def gaussian_distribution(self, y, mu, sigma):
+        y = y.unsqueeze(2).expand_as(sigma)
+        
+        out = (y - mu) / sigma
+        out = -0.5 * (out * out)
+        out = (torch.exp(out) / sigma) * self.oneDivSqrtTwoPI
 
+        return out
+
+    def loss(self, y, pi, mu, sigma):
+
+        out = self.gaussian_distribution(y, mu, sigma)
+        out = out * pi
+        out = torch.sum(out, dim=2)
+        
+        # kill (inf) nan loss
+        out[out <= float(1e-24)] = 1
+        
+        out = -torch.log(out)
+        out = torch.mean(out)
+        
+        return out
