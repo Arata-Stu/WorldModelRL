@@ -75,7 +75,9 @@ model.vae.ckpt_path=<ckpt>
 ```shell
 python3 train_mdn.py \
 data=mdn \
-data.data_dir=./datasets/<data_dir>
+model/mdn=mdnrnn \
+data.data_dir=./datasets/car-racing/ \
+save_ckpt_dir=./ckpts/car-racing_mdn/
 ```
 
 
