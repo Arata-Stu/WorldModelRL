@@ -2,6 +2,7 @@ import os
 import argparse
 import gymnasium as gym
 import numpy as np
+import h5py
 from gymnasium.wrappers import TimeLimit
 
 def collect_and_save_data(args):
@@ -20,7 +21,7 @@ def collect_and_save_data(args):
         done = False
         step = 0
         while not done and step < args.max_steps:
-            # 行動はここではランダムに選択（または手動操作に切り替え可能）
+            # ランダムに行動を選択
             action = env.action_space.sample()
             obs, reward, terminated, truncated, info = env.step(action)
             done = terminated or truncated
@@ -35,14 +36,12 @@ def collect_and_save_data(args):
             
             step += 1
         
-        # エピソードごとに npz 形式で保存
-        episode_data = {
-            "observations": np.array(episode_obs),  # 形状: (steps, H, W, C)
-            "actions": np.array(episode_actions),     # 形状: (steps, action_dim)
-            "rewards": np.array(episode_rewards)        # 形状: (steps,)
-        }
-        file_path = os.path.join(args.output_dir, f"episode_{ep:03d}.npz")
-        np.savez(file_path, **episode_data)
+        # エピソードごとに HDF5 形式で保存（gzip圧縮を使用、不要なら compression を削除）
+        file_path = os.path.join(args.output_dir, f"episode_{ep:03d}.h5")
+        with h5py.File(file_path, 'w') as f:
+            f.create_dataset("observations", data=np.array(episode_obs), compression="gzip")
+            f.create_dataset("actions", data=np.array(episode_actions), compression="gzip")
+            f.create_dataset("rewards", data=np.array(episode_rewards), compression="gzip")
         print(f"Episode {ep} saved to {file_path}")
     
     env.close()

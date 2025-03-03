@@ -7,6 +7,7 @@ hydra-core
 omegaconf
 opencv-python
 pycocotools
+h5py
 
 gymnasium
 Box2D

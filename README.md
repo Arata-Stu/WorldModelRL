@@ -38,19 +38,16 @@ data.num_workers=10
 ### データを集める
 ```shell
 python3 collect_data.py \
---mode random \
 --num_episodes 10 \
 --num_steps 1000 \
 --output_dir ./data/vae_train \
---img_size 64 \
---render human
 ```
 
 ### 集めたデータで学習
 ```shell
 python3 train_vae.py \
-vae=cnn \
-data=gym \
+model/vae=cnn \
+data=gym_img \
 save_ckpt_dir=./ckpts/<ckpt_dir_name>/ \
 data.data_dir=./datasets/<dataset_name>/ \
 data.num_workers=10 
