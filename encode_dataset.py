@@ -44,10 +44,11 @@ def encode_and_update_h5(vae, data_dir, output_dir, device="cpu"):
 
 @hydra.main(config_path="config", config_name="encode", version_base="1.2")
 def main(cfg: DictConfig):
+    print('------ Configuration ------')
     print(OmegaConf.to_yaml(cfg))
+    print('---------------------------')
     
-    vae_cfg = OmegaConf.load(cfg.model.vae)
-    vae = get_vae(vae_cfg=vae_cfg)
+    vae = get_vae(vae_cfg=cfg.model.vae)
     vae.eval()
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
