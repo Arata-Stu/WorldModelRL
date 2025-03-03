@@ -28,9 +28,15 @@ latent_dim = 32
 action_dim = 3
 model = MDNRNN(mdnrnn_cfg, latent_dim=latent_dim, action_dim=action_dim)
 
-sample_latent_seq = torch.randn(1, 20, latent_dim)
-sample_action_seq = torch.randn(1, 20, action_dim)
+sample_latent_seq = torch.randn(16, 20, latent_dim)
+sample_action_seq = torch.randn(16, 20, action_dim)
 ## zとactionを結合してmdnrnnに入力
 rnn_input = torch.cat([sample_latent_seq, sample_action_seq], dim=-1)
 pi, mu, sigma, hidden = model(rnn_input)
 print("------ Output ------")
+print(f"pi: {pi.shape}")
+print(f"mu: {mu.shape}")
+print(f"sigma: {sigma.shape}")
+print(f"hidden: {hidden[0].shape}")
+print("---------------------------")
+print("All tests passed!")
