@@ -8,7 +8,7 @@ from gymnasium.wrappers import TimeLimit
 def collect_and_save_data(args):
     # 環境の初期化（render_mode は "rgb_array" を指定）
     env = gym.make("CarRacing-v3", render_mode="rgb_array")
-    env = TimeLimit(env, max_episode_steps=args.max_steps)
+    env = TimeLimit(env, max_episode_steps=args.num_steps)
     
     os.makedirs(args.output_dir, exist_ok=True)
     
