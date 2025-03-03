@@ -2,6 +2,7 @@ gym_env
 rl_env
 outputs
 runs
+logs/
 datasets/
 ckpts/
 # Byte-compiled / optimized / DLL files

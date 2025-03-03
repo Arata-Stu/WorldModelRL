@@ -1,14 +1,14 @@
 import os
-import argparse
-import gymnasium as gym
 import numpy as np
+import hydra
 import h5py
-from gymnasium.wrappers import TimeLimit
 
-def collect_and_save_data(args):
-    # 環境の初期化（render_mode は "rgb_array" を指定）
-    env = gym.make("CarRacing-v3", render_mode="rgb_array")
-    env = TimeLimit(env, max_episode_steps=args.num_steps)
+from src.envs.envs import get_env
+
+@hydra.main(config_path="config", config_name="collect_data", version_base="1.2")
+def main(args):
+    # 環境の初期化
+    env = get_env(args.env)
     
     os.makedirs(args.output_dir, exist_ok=True)
     
@@ -47,9 +47,4 @@ def collect_and_save_data(args):
     env.close()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--num_episodes", type=int, default=10, help="収集するエピソード数")
-    parser.add_argument("--num_steps", type=int, default=1000, help="エピソードあたりの最大ステップ数")
-    parser.add_argument("--output_dir", type=str, required=True, help="データ保存先ディレクトリ")
-    args = parser.parse_args()
-    collect_and_save_data(args)
+    main()
