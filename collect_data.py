@@ -2,8 +2,8 @@ import os
 import numpy as np
 import hydra
 import h5py
+import multiprocessing
 from omegaconf import DictConfig, OmegaConf
-from concurrent.futures import ProcessPoolExecutor
 
 from src.envs.envs import get_env
 
@@ -18,7 +18,10 @@ def main(config: DictConfig):
 
     def collect_episode(ep):
         """1つのエピソードを収集して保存"""
+        print(f"Starting episode {ep}")
         env = get_env(config.envs)  # 各プロセスで環境を独立して作成
+        print(f"Environment initialized for episode {ep}")
+        
         obs, info = env.reset()
         episode_obs = []
         episode_actions = []
@@ -49,13 +52,27 @@ def main(config: DictConfig):
         print(f"Episode {ep} saved to {file_path}")
 
         env.close()
+
     if config.envs.render_mode == 'human':
         num_workers = 1
     else:
-        num_workers = min(config.num_workers, os.cpu_count())  # 設定された worker 数を使用
+        num_workers = min(config.num_workers, os.cpu_count() or 1)  # CPU数を考慮
 
-    with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        executor.map(collect_episode, range(config.num_episodes))
+    print(f"Start collecting data with {num_workers} workers")
+
+    processes = []
+    for ep in range(config.num_episodes):
+        p = multiprocessing.Process(target=collect_episode, args=(ep,))
+        p.start()
+        processes.append(p)
+
+        if len(processes) >= num_workers:
+            for p in processes:
+                p.join()
+            processes = []
+
+    for p in processes:
+        p.join()
 
 if __name__ == "__main__":
     main()
