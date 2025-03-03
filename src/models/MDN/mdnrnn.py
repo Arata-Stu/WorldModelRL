@@ -2,19 +2,9 @@ import torch
 import torch.nn as nn
 from omegaconf import DictConfig
 from .mdn import MDN
-# from src.utils.timers import CudaTimer as Timer
 from src.utils.timers import TimerDummy as Timer
 
 class MDNRNN(nn.Module):
-    """
-    MDN-RNNの実装です。
-    LSTMで入力系列の文脈情報を抽出し、その出力を用いてMDNで次の潜在変数の分布パラメータを予測します。
-
-    Args:
-        mdnrnn_cfg (DictConfig): Hydraを用いた設定（hidden_size, num_layers, num_mixturesなど）
-        latent_dim (int): VAEの潜在空間の次元数
-        action_dim (int): 行動空間の次元数（必要な場合、入力に含める）
-    """
     def __init__(self, mdnrnn_cfg: DictConfig, latent_dim: int, action_dim: int = 0):
         super().__init__()
         self.latent_dim = latent_dim
@@ -23,8 +13,8 @@ class MDNRNN(nn.Module):
         self.hidden_size = mdnrnn_cfg.hidden_size
         self.num_layers = mdnrnn_cfg.num_layers
         self.num_mixtures = mdnrnn_cfg.num_mixtures
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
-        # LSTMレイヤー
         self.lstm = nn.LSTM(
             input_size=self.input_dim,
             hidden_size=self.hidden_size,
@@ -32,19 +22,14 @@ class MDNRNN(nn.Module):
             batch_first=True
         )
         
-        # MDNクラスを利用
         self.mdn = MDN(input_dim=self.hidden_size, latent_dim=self.latent_dim, num_mixtures=self.num_mixtures)
+        
+        self.init_weights()
+        
+        if mdnrnn_cfg.ckpt_path is not None:
+            self.load_weights(mdnrnn_cfg.ckpt_path)
     
     def forward(self, inputs: torch.Tensor, hidden=None):
-        """
-        Args:
-            inputs (torch.Tensor): 入力テンソル、形状は (batch, seq_len, input_dim)
-            hidden (optional): LSTMの初期隠れ状態
-        
-        Returns:
-            hidden: LSTMの最終的な隠れ状態
-            (pi, mu, sigma): MDNの出力パラメータ
-        """
         with Timer(device=inputs.device, timer_name="MDNRNN: forward"):
             if hidden is None:
                 lstm_out, hidden = self.lstm(inputs)
@@ -54,11 +39,27 @@ class MDNRNN(nn.Module):
         return pi, mu, sigma, hidden
     
     def init_weights(self):
-        """LSTMとMDNの重みを適切に初期化"""
         for name, param in self.lstm.named_parameters():
-            if 'weight_ih' in name:  # 入力から隠れ層の重み
+            if 'weight_ih' in name:
                 nn.init.xavier_uniform_(param.data)
-            elif 'weight_hh' in name:  # 隠れ層から隠れ層の重み
+            elif 'weight_hh' in name:
                 nn.init.orthogonal_(param.data)
-            elif 'bias' in name:  # バイアス
+            elif 'bias' in name:
                 param.data.fill_(0)
+    
+    def load_weights(self, path: str, strict: bool = True):
+        if path.endswith(".pth"):
+            state_dict = torch.load(path, map_location=self.device)
+            self.load_state_dict(state_dict, strict=strict)
+            print(f"Loaded .pth weights from {path}")
+        elif path.endswith(".ckpt"):
+            checkpoint = torch.load(path, map_location=self.device)
+            if "state_dict" in checkpoint:
+                state_dict = checkpoint["state_dict"]
+                new_state_dict = {k.replace("model.", ""): v for k, v in state_dict.items()}
+                self.load_state_dict(new_state_dict, strict=strict)
+                print(f"Loaded .ckpt weights from {path}")
+            else:
+                raise ValueError(f"Invalid .ckpt file format: {path}")
+        else:
+            raise ValueError(f"Unsupported file format: {path}")
