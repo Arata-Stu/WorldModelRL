@@ -2,17 +2,23 @@ import os
 import numpy as np
 import hydra
 import h5py
+from omegaconf import DictConfig, OmegaConf
 from concurrent.futures import ProcessPoolExecutor
 
 from src.envs.envs import get_env
 
 @hydra.main(config_path="config", config_name="collect_data", version_base="1.2")
-def main(config):
+def main(config: DictConfig):
+    OmegaConf.to_container(config, resolve=True, throw_on_missing=True)
+    print("------ Configuration ------")
+    print(OmegaConf.to_yaml(config))
+    print("---------------------------")
+
     os.makedirs(config.output_dir, exist_ok=True)
 
     def collect_episode(ep):
         """1つのエピソードを収集して保存"""
-        env = get_env(config.env)  # 各プロセスで環境を独立して作成
+        env = get_env(config.envs)  # 各プロセスで環境を独立して作成
         obs, info = env.reset()
         episode_obs = []
         episode_actions = []
@@ -47,7 +53,7 @@ def main(config):
         num_workers = 1
     else:
         num_workers = min(config.num_workers, os.cpu_count())  # 設定された worker 数を使用
-        
+
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
         executor.map(collect_episode, range(config.num_episodes))
 
