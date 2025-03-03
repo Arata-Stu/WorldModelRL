@@ -2,7 +2,7 @@ from omegaconf import DictConfig
 import gymnasium as gym
 from gymnasium.wrappers import TimeLimit
 
-from envs.car_racing import CarRacingWithInfoWrapper
+from src.envs.car_racing import CarRacingWithInfoWrapper
 
 def get_env(env_cfg: DictConfig):
 
