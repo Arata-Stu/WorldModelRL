@@ -2,7 +2,7 @@ defaults:
   - default
   - envs: car_racing
   
-max_episodes: 1000
+num_episodes: 1000
 num_steps: 1000
 num_workers: 10
 output_dir: ???
