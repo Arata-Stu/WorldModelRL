@@ -53,6 +53,14 @@ data.data_dir=./datasets/<dataset_name>/ \
 data.num_workers=10 
 ```
 
+### データをエンコード
+```shell
+python3 encode_dataset.py \
+--data_dir ./datasets/<dir_name> \
+--output_dir ./datasets/<dir_name> \
+--vae_yaml_path ./config/model/vae/cnn.yaml
+```
+
 ### VAEの評価
 ```shell
 cd test
