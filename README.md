@@ -38,9 +38,11 @@ data.num_workers=10
 ### データを集める
 ```shell
 python3 collect_data.py \
---num_episodes 10 \
---num_steps 1000 \
---output_dir ./datasets/car-racing 
+envs=car-racing \
+output_dir=./datasets/car-racing/ \
+num_episodes=100 \
+num_steps=1000 \
+num_workers=10 
 ```
 
 ### 集めたデータで学習
