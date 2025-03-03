@@ -31,6 +31,8 @@ model/vae=cnn \
 save_ckpt_dir=./ckpts/coco_cnn_vae/ \
 data.data_dir=./datasets/coco/ 
 data.num_workers=10 
+data.batch_size=64
+data.img_size=64
 ```
 
 ### 2-2. gym環境のデータを用いてVAEを学習
@@ -40,6 +42,7 @@ data.num_workers=10
 python3 collect_data.py \
 envs=car_racing \
 output_dir=./datasets/car-racing/ \
+envs.img_size=64 \
 num_episodes=100 \
 num_steps=1000 \
 num_workers=10 
@@ -53,6 +56,8 @@ data=gym_img \
 save_ckpt_dir=./ckpts/car-racing_cnn/ \
 data.data_dir=./datasets/car-racing/ \
 data.num_workers=10 
+data.batch_size=64
+data.img_size=64
 ```
 
 ### データをエンコード
