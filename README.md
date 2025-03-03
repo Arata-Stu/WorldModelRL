@@ -38,7 +38,7 @@ data.num_workers=10
 ### データを集める
 ```shell
 python3 collect_data.py \
-envs=car-racing \
+envs=car_racing \
 output_dir=./datasets/car-racing/ \
 num_episodes=100 \
 num_steps=1000 \
