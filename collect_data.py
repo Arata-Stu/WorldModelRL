@@ -49,7 +49,7 @@ def collect_and_save_data(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--num_episodes", type=int, default=10, help="収集するエピソード数")
-    parser.add_argument("--max_steps", type=int, default=1000, help="エピソードあたりの最大ステップ数")
+    parser.add_argument("--num_steps", type=int, default=1000, help="エピソードあたりの最大ステップ数")
     parser.add_argument("--output_dir", type=str, required=True, help="データ保存先ディレクトリ")
     args = parser.parse_args()
     collect_and_save_data(args)
