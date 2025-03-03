@@ -40,7 +40,7 @@ data.num_workers=10
 python3 collect_data.py \
 --num_episodes 10 \
 --num_steps 1000 \
---output_dir ./data/car-racing 
+--output_dir ./datasets/car-racing 
 ```
 
 ### 集めたデータで学習
