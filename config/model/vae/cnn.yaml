@@ -1,0 +1,8 @@
+defaults:
+  - default
+
+name: cnn_vae
+type: cnn
+latent_dim: 64
+input_shape: [3, 64, 64]
+ckpt_path: ???

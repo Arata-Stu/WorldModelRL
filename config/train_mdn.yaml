@@ -1,0 +1,11 @@
+defaults:
+  - default
+  - model/mdn: ???
+  - data: ???
+  
+learning_rate: 1e-4
+save_ckpt_dir: ???
+log_dir: ./logs
+num_epochs: 100
+
+

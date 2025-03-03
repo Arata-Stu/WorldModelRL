@@ -1,0 +1,8 @@
+defaults:
+  - default
+
+name: gym_img
+data_dir: ???
+seq_length: 20
+batch_size: 64
+num_workers: 4

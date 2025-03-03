@@ -1,0 +1,9 @@
+defaults:
+  - default
+
+name: gym_img
+data_dir: ???
+train_ratio: 0.8
+img_size: 64
+batch_size: 64
+num_workers: 4
