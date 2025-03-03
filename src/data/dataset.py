@@ -1,7 +1,7 @@
 from omegaconf import DictConfig
 
 from src.data.coco import CocoDataModule
-from src.data.img_dataset import NPZDataModule
+from src.data.img_dataset import H5DataModule
 from src.data.mdn_dataset import MDNRNNDataModule
 
 def get_data_module(data_cfg: DictConfig):
@@ -14,7 +14,7 @@ def get_data_module(data_cfg: DictConfig):
                               num_workers=data_cfg.num_workers)
     elif data_cfg.name == "gym_img":
         print(f"Loading data module for {data_cfg.name} dataset")
-        return NPZDataModule(data_dir=data_cfg.data_dir,
+        return H5DataModule(data_dir=data_cfg.data_dir,
                           batch_size=data_cfg.batch_size,
                           img_size=data_cfg.img_size,
                           train_ratio=data_cfg.train_ratio,
