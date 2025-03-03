@@ -62,6 +62,7 @@ class MDNRNNDataModule(pl.LightningDataModule):
         # 80% を学習用、20% をバリデーション用に分割
         train_size = int(0.8 * len(dataset))
         val_size = len(dataset) - train_size
+        print(f"Train: {train_size}, Val: {val_size}")
         self.train_dataset, self.val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
 
     def train_dataloader(self):
