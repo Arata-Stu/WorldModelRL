@@ -4,3 +4,4 @@ defaults:
 hidden_size: 256
 num_layers: 1
 num_mixtures: 5
+ckpy_path: null
