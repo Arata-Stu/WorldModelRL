@@ -95,7 +95,7 @@ class MDN(nn.Module):
     def loss(self, y, pi, mu, sigma):
 
         out = self.gaussian_distribution(y, mu, sigma)
-        out = out * pi
+        out = out * pi.unsqueeze(-1)   
         out = torch.sum(out, dim=2)
         
         # kill (inf) nan loss
