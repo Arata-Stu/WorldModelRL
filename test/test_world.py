@@ -38,35 +38,43 @@ def main(config: DictConfig):
     step = 0
     while step < config.num_steps:
         # HWC numpy (RGB) -> CHW torch tensor に変換し、バッチ次元を追加
-        # /255 でスケールを [0, 1] に変換、float に変換、device に転送
         obs_img_tensor = torch.tensor(obs_img, dtype=torch.float32, device=device).permute(2, 0, 1).unsqueeze(0) / 255
-        
-        # WorldModel の forward を呼び出し、潜在状態や行動、報酬を予測
-        pred_z, pred_action, pred_reward = model(obs_img_tensor)
-        
-        # VAE のデコーダーを使って潜在状態から画像を再構成
-        recon_img = model.vae.decode(pred_z)
-        
-        # torch tensor (CHW) -> numpy (HWC) への変換
+
+        # Step 1: VAEで観測画像から潜在表現 z を取得
+        z = model.vae.obs_to_z(obs_img_tensor)
+
+        # Step 2: ランダムな行動を生成（例：-1〜1の一様分布）
+        random_action = torch.rand((1, action_dim), dtype=torch.float32, device=device) * 2 - 1
+
+        # Step 3: MDN-RNN の入力を作成（潜在表現とランダム行動を結合）
+        rnn_input = torch.cat([z, random_action], dim=-1).unsqueeze(1)
+        pi, mu, sigma, lstm_out, hidden = model.mdn_rnn(rnn_input, model.state)
+
+        # Step 4: MDNから次の潜在状態をサンプリング
+        next_z = model.mdn_rnn.mdn.sample(pi, mu, sigma)
+
+        # Step 5: 報酬予測（オプション）
+        reward_input = torch.cat([next_z, lstm_out], dim=-1)
+        next_reward = model.reward_predictor(reward_input)
+
+        # Step 6: VAEのデコーダーで画像を再構成し、可視化用に整形
+        recon_img = model.vae.decode(next_z)
         recon_img_np = recon_img.squeeze(0).detach().cpu().permute(1, 2, 0).numpy()
-        
-        # データスケールが [0, 1] であれば [0, 255] に変換、また OpenCV 用に RGB -> BGR 変換
         recon_img_uint8 = (recon_img_np * 255).clip(0, 255).astype(np.uint8)
         recon_img_bgr = cv2.cvtColor(recon_img_uint8, cv2.COLOR_RGB2BGR)
-        
-        # 画像をウィンドウに表示（100ms 待機）
+
         cv2.imshow("Dream Visualization", recon_img_bgr)
         key = cv2.waitKey(100)
-        # ESCキーで中断可能
         if key == 27:
             break
-        
+
         # 次のステップの入力画像として再構成画像を利用（必要に応じて前処理を調整）
         obs_img = recon_img_uint8
-        
+
         step += 1
 
     cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     main()
