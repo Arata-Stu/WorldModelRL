@@ -1,0 +1,27 @@
+defaults:
+  - default
+  - model/vae: ???
+  - model/mdn: ???
+  - model/reward: ???
+  - model/controller: ???
+  - envs: car_racing
+
+model:
+  ckpt_path: ???
+
+es:
+  num_iterations: 200        # 学習の反復回数
+  population_size: 50        # 一世代あたりの候補パラメータ数
+  sigma: 0.1                 # 変異の標準偏差
+  learning_rate: 0.01        # 勾配推定時の学習率
+  simulation_steps: 100      # 1エピソードあたりのシミュレーションステップ数
+  seed: 42                   # 乱数シード（再現性）
+  reward_normalization: True # 報酬の正規化を行う
+  discount_factor: 0.99      # 割引率
+  parallel_workers: 4        # 並列ワーカー数
+  adaptive_sigma: True       # 変異の標準偏差を学習
+  sigma_decay: 0.995         # 変異の減衰率
+  min_sigma: 0.01            # 変異の最小値
+  elite_ratio: 0.2           # 上位20%の個体を次世代に活かす
+  use_top_k: False           # 上位K個だけで更新する場合は True
+  exploration_noise: 0.1     # 方策ノイズ（探索用）
