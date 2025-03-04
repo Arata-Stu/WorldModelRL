@@ -7,6 +7,6 @@ defaults:
   - envs: car_racing
   
 model:
-  ckpt_path: null
+  ckpt_path: ???
   
 num_steps: 1000
