@@ -89,7 +89,7 @@ class WorldModelModule(pl.LightningModule):
 
 
 
-@hydra.main(config_path="config", config_name="train_world_model", version_base="1.2")
+@hydra.main(config_path="config", config_name="train_mdn", version_base="1.2")
 def main(config: DictConfig):
     OmegaConf.to_container(config, resolve=True, throw_on_missing=True)
     print("------ Configuration ------")
