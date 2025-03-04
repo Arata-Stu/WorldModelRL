@@ -48,7 +48,7 @@ class WorldModelModule(pl.LightningModule):
         next_z = self.model.mdn_rnn.mdn.sample(pi, mu, sigma)
         # 次状態 next_z から報酬予測
         reward_in = torch.cat([next_z, lstm_out], dim=-1)
-        predicted_reward = self.model.reward_predictor(next_z)
+        predicted_reward = self.model.reward_predictor(reward_in)
         return pi, mu, sigma, next_z, predicted_reward, hidden
 
     def training_step(self, batch, batch_idx):
