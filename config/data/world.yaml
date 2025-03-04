@@ -1,7 +1,7 @@
 defaults:
   - default
 
-name: mdn
+name: world
 data_dir: ???
 seq_length: 20
 img_size: 64

@@ -63,8 +63,8 @@ class WorldModelModule(pl.LightningModule):
 
         # MDN-RNN の損失（次状態予測誤差）
         loss_mdn = self.mdnrnn.loss(target_z, pi, mu, sigma)
-        # 報酬予測の損失（MSE）
-        loss_reward = F.mse_loss(pred_reward, target_reward)
+        # pred_reward の余分な次元を削除して MSE 損失を計算
+        loss_reward = F.mse_loss(pred_reward.squeeze(-1), target_reward)
         loss = loss_mdn + self.reward_loss_weight * loss_reward
 
         self.log("train_loss", loss, prog_bar=True)
@@ -76,13 +76,14 @@ class WorldModelModule(pl.LightningModule):
         latent_seq, action_seq, target_z, target_reward = batch
         pi, mu, sigma, next_z, pred_reward, _ = self(latent_seq, action_seq)
         loss_mdn = self.mdnrnn.loss(target_z, pi, mu, sigma)
-        loss_reward = F.mse_loss(pred_reward, target_reward)
+        loss_reward = F.mse_loss(pred_reward.squeeze(-1), target_reward)
         loss = loss_mdn + self.reward_loss_weight * loss_reward
 
         self.log("val_loss", loss, prog_bar=True)
         self.log("val_loss_mdn", loss_mdn, prog_bar=True)
         self.log("val_loss_reward", loss_reward, prog_bar=True)
         return loss
+
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.learning_rate)

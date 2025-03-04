@@ -2,7 +2,7 @@ from omegaconf import DictConfig
 
 from src.data.coco import CocoDataModule
 from src.data.img_dataset import H5DataModule
-from src.data.mdn_dataset import WorldModelDataModule
+from data.world_dataset import WorldModelDataModule
 
 def get_data_module(data_cfg: DictConfig):
     
@@ -19,7 +19,7 @@ def get_data_module(data_cfg: DictConfig):
                           img_size=data_cfg.img_size,
                           train_ratio=data_cfg.train_ratio,
                           num_workers=data_cfg.num_workers)
-    elif data_cfg.name == "mdn":
+    elif data_cfg.name == "world":
         print(f"Loading data module for {data_cfg.name} dataset")
         return WorldModelDataModule(data_dir=data_cfg.data_dir,
                                 batch_size=data_cfg.batch_size,
