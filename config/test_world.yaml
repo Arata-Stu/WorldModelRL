@@ -3,6 +3,7 @@ defaults:
   - model/vae: ???
   - model/mdn: ???
   - model/reward: ???
+  - model/controller: ???
   - envs: car_racing
   
 model:
