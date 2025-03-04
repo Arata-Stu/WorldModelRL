@@ -25,3 +25,5 @@ es:
   elite_ratio: 0.2           # 上位20%の個体を次世代に活かす
   use_top_k: False           # 上位K個だけで更新する場合は True
   exploration_noise: 0.1     # 方策ノイズ（探索用）
+
+save_dir: ???
