@@ -29,10 +29,11 @@ python3 train_vae.py \
 data=coco \
 model/vae=cnn \
 save_ckpt_dir=./ckpts/coco_cnn_vae/ \
-data.data_dir=./datasets/coco/ 
-data.num_workers=10 
-data.batch_size=64
-data.img_size=64
+num_epochs=100 \
+data.data_dir=./datasets/coco/ \
+data.num_workers=10 \
+data.batch_size=64 \
+data.img_size=64\
 ```
 
 ### 2-2. gym環境のデータを用いてVAEを学習
@@ -43,6 +44,7 @@ python3 collect_data.py \
 envs=car_racing \
 output_dir=./datasets/car-racing/ \
 envs.img_size=64 \
+envs.render_mode=rgb_array \
 num_episodes=100 \
 num_steps=1000 \
 num_workers=10 
@@ -73,11 +75,19 @@ model.vae.ckpt_path=<ckpt>
 
 ### 学習
 ```shell
-python3 train_mdn.py \
-data=mdn \
+python3 train_world.py \
+data=world \
 model/mdn=mdnrnn \
+model/reward=default \
+model/vae=cnn \
+model/controller=controller \
 data.data_dir=./datasets/car-racing/ \
-save_ckpt_dir=./ckpts/car-racing_mdn/
+save_ckpt_dir=./ckpts/car-racing_mdn/ \
+reward_loss_weight=1 \
+model.vae.ckpt_path=./ckpts/car-racing_cnn/last.ckpt  \
+model.controller.ckpt_path=null \
+num_epochs=300
+
 ```
 
 
