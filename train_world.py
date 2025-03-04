@@ -47,6 +47,7 @@ class WorldModelModule(pl.LightningModule):
         pi, mu, sigma, hidden = self.model.mdn_rnn(inputs, hidden)
         next_z = self.model.mdn_rnn.mdn.sample(pi, mu, sigma)
         # 次状態 next_z から報酬予測
+        reward_in = torch.cat([next_z, hidden], dim=-1)
         predicted_reward = self.model.reward_predictor(next_z)
         return pi, mu, sigma, next_z, predicted_reward, hidden
 
