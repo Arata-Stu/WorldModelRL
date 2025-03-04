@@ -73,7 +73,7 @@ class WorldModel(nn.Module):
             next_z = self.mdn_rnn.mdn.sample(pi, mu, sigma)
 
             # Step5: 報酬予測
-            reward_input = torch.cat([z, lstm_out], dim=1)
+            reward_input = torch.cat([next_z, lstm_out], dim=-1)
             next_reward = self.reward_predictor(reward_input)
             
             # 更新された隠れ状態をクラス属性に保持
