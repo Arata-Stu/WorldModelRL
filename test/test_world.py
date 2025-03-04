@@ -38,7 +38,8 @@ def main(config: DictConfig):
     step = 0
     while step < config.num_steps:
         # HWC numpy (RGB) -> CHW torch tensor に変換し、バッチ次元を追加
-        obs_img_tensor = torch.tensor(obs_img).permute(2, 0, 1).unsqueeze(0).float().to(device)
+        # /255 でスケールを [0, 1] に変換、float に変換、device に転送
+        obs_img_tensor = torch.tensor(obs_img, dtype=torch.float32, device=device).permute(2, 0, 1).unsqueeze(0) / 255
         
         # WorldModel の forward を呼び出し、潜在状態や行動、報酬を予測
         pred_z, pred_action, pred_reward = model(obs_img_tensor)
