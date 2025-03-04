@@ -10,7 +10,7 @@ import numpy as np
 from src.envs.envs import get_env
 from src.models.world_model import WorldModel
 
-@hydra.main(config_path="../config/model", config_name="default", version_base="1.2")
+@hydra.main(config_path="../config", config_name="test_world", version_base="1.2")
 def main(config: DictConfig):
     # 設定の確認
     OmegaConf.to_container(config, resolve=True, throw_on_missing=True)
