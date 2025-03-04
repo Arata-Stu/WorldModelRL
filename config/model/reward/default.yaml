@@ -1,0 +1,2 @@
+hidden_dims: [128, 64]
+ckpt_path: null

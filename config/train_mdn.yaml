@@ -1,6 +1,7 @@
 defaults:
   - default
   - model/mdn: ???
+  - model/reward: ???
   - data: ???
   
 learning_rate: 1e-4
