@@ -86,14 +86,26 @@ class WorldModel(nn.Module):
             state_dict = torch.load(path, map_location=self.device)
             self.load_state_dict(state_dict, strict=strict)
             print(f"Loaded .pth weights from {path}")
+
         elif path.endswith(".ckpt"):
             checkpoint = torch.load(path, map_location=self.device)
             if "state_dict" in checkpoint:
                 state_dict = checkpoint["state_dict"]
-                new_state_dict = {k.replace("model.", ""): v for k, v in state_dict.items()}
+                
+                # 特定のキーのみに "model." を削除する
+                new_state_dict = {}
+                for k, v in state_dict.items():
+                    if k.startswith(("model.vae", "model.mdn_rnn", "model.controller", "model.reward_predictor")):
+                        new_key = k.replace("model.", "", 1)  # 先頭の "model." を削除
+                    else:
+                        new_key = k  # 他の "model" を含むキーはそのまま
+
+                    new_state_dict[new_key] = v
+
                 self.load_state_dict(new_state_dict, strict=strict)
                 print(f"Loaded .ckpt weights from {path}")
             else:
                 raise ValueError(f"Invalid .ckpt file format: {path}")
+
         else:
             raise ValueError(f"Unsupported file format: {path}")
