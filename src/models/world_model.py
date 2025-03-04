@@ -28,7 +28,7 @@ class WorldModel(nn.Module):
                                      hidden_dims=cfg.controller.hidden_dims,
                                      ckpt_path=cfg.controller.ckpt_path).to(self.device)
         # RewardPredictor 
-        self.reward_predictor = RewardPredictor(input_dim=cfg.vae.latent_dim, 
+        self.reward_predictor = RewardPredictor(input_dim=cfg.vae.latent_dim + cfg.mdn.hidden_size, 
                                                 hidden_dims=cfg.reward.hidden_dims).to(self.device)
         
         
