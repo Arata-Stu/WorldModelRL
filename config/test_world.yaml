@@ -1,0 +1,14 @@
+defaults:
+  - default
+  - model/mdn: ???
+  - model/reward: ???
+  
+model:
+  ckpt_path: null
+  
+learning_rate: 1e-4
+save_ckpt_dir: ???
+log_dir: ./logs
+num_epochs: 100
+
+
