@@ -2,7 +2,7 @@ from omegaconf import DictConfig
 
 from src.data.coco import CocoDataModule
 from src.data.img_dataset import H5DataModule
-from data.world_dataset import WorldModelDataModule
+from src.data.world_dataset import WorldModelDataModule
 
 def get_data_module(data_cfg: DictConfig):
     
