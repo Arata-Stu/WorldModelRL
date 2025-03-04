@@ -63,7 +63,7 @@ def simulate_dream(model: WorldModel, initial_obs: np.ndarray, simulation_steps:
     
     return cumulative_reward
 
-@hydra.main(config_path="config", config_name="test_controller", version_base="1.2")
+@hydra.main(config_path="config", config_name="train_controller", version_base="1.2")
 def main(config: DictConfig):
     # 設定の確認
     OmegaConf.to_container(config, resolve=True, throw_on_missing=True)
