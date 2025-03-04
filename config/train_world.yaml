@@ -1,13 +1,16 @@
 defaults:
   - default
+  - model/vae: ???
   - model/mdn: ???
   - model/reward: ???
-  - data: ???
+  - model/controller: ???
+  - envs: car_racing
   
 model:
   ckpt_path: null
   
 learning_rate: 1e-4
+reward_loss_weight: 1.0
 save_ckpt_dir: ???
 log_dir: ./logs
 num_epochs: 100
