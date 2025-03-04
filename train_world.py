@@ -44,10 +44,10 @@ class WorldModelModule(pl.LightningModule):
         """
         # MDN-RNN の入力: 潜在状態と行動を結合
         inputs = torch.cat([latent_seq, action_seq], dim=-1)
-        pi, mu, sigma, hidden = self.model.mdn_rnn(inputs, hidden)
+        pi, mu, sigma, lstm_out, hidden = self.model.mdn_rnn(inputs, hidden)
         next_z = self.model.mdn_rnn.mdn.sample(pi, mu, sigma)
         # 次状態 next_z から報酬予測
-        reward_in = torch.cat([next_z, hidden], dim=-1)
+        reward_in = torch.cat([next_z, lstm_out], dim=-1)
         predicted_reward = self.model.reward_predictor(next_z)
         return pi, mu, sigma, next_z, predicted_reward, hidden
 

@@ -67,13 +67,13 @@ class WorldModel(nn.Module):
 
             # Step 3: MDN-RNN で次の潜在表現を予測
             rnn_input = torch.cat([z, next_action], dim=-1).unsqueeze(1)  # 潜在変数と行動を結合
-            pi, mu, sigma, hidden = self.mdn_rnn(rnn_input, hidden)
+            pi, mu, sigma, lstm_out, hidden = self.mdn_rnn(rnn_input, hidden)
             
             # Step 4: 次の潜在表現をサンプリング
             next_z = self.mdn_rnn.mdn.sample(pi, mu, sigma)
 
             # Step5: 報酬予測
-            reward_input = torch.cat([z, hidden[0][0]], dim=1)
+            reward_input = torch.cat([z, lstm_out], dim=1)
             next_reward = self.reward_predictor(reward_input)
             
             # 更新された隠れ状態をクラス属性に保持

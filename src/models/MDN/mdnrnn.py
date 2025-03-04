@@ -36,7 +36,7 @@ class MDNRNN(nn.Module):
             else:
                 lstm_out, hidden = self.lstm(inputs, hidden)
             pi, mu, sigma = self.mdn(lstm_out)
-        return pi, mu, sigma, hidden
+        return pi, mu, sigma, lstm_out, hidden
     
     def init_weights(self):
         for name, param in self.lstm.named_parameters():
