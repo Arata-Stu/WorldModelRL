@@ -35,6 +35,9 @@ class WorldModel(nn.Module):
         # 初期の隠れ状態をクラス属性として保持
         self.state = (torch.zeros((1, 1, self.mdn_rnn.hidden_size)).to(self.device),
                       torch.zeros((1, 1, self.mdn_rnn.hidden_size)).to(self.device))
+        
+        if cfg.ckpt_path is not None:
+            self.load_weights(cfg.ckpt_path)
 
     def forward(self, obs: torch.Tensor, hidden=None):
         """
@@ -78,33 +81,19 @@ class WorldModel(nn.Module):
 
         return next_z, next_action, next_reward
 
-
-
-
-    def save_checkpoint(self, path: str):
-        """
-        モデルのチェックポイントを保存。
-
-        Args:
-            path (str): 保存先のファイルパス
-        """
-        checkpoint = {
-            "vae": self.vae.state_dict(),
-            "mdnrnn": self.mdn_rnn.state_dict(),
-            "controller": self.controller.state_dict()
-        }
-        torch.save(checkpoint, path)
-        print(f"Checkpoint saved to {path}")
-
-    def load_checkpoint(self, path: str):
-        """
-        モデルのチェックポイントをロード。
-
-        Args:
-            path (str): 読み込むファイルのパス
-        """
-        checkpoint = torch.load(path, map_location=self.device)
-        self.vae.load_state_dict(checkpoint["vae"])
-        self.mdn_rnn.load_state_dict(checkpoint["mdnrnn"])
-        self.controller.load_state_dict(checkpoint["controller"])
-        print(f"Checkpoint loaded from {path}")
+    def load_weights(self, path: str, strict: bool = True):
+        if path.endswith(".pth"):
+            state_dict = torch.load(path, map_location=self.device)
+            self.load_state_dict(state_dict, strict=strict)
+            print(f"Loaded .pth weights from {path}")
+        elif path.endswith(".ckpt"):
+            checkpoint = torch.load(path, map_location=self.device)
+            if "state_dict" in checkpoint:
+                state_dict = checkpoint["state_dict"]
+                new_state_dict = {k.replace("model.", ""): v for k, v in state_dict.items()}
+                self.load_state_dict(new_state_dict, strict=strict)
+                print(f"Loaded .ckpt weights from {path}")
+            else:
+                raise ValueError(f"Invalid .ckpt file format: {path}")
+        else:
+            raise ValueError(f"Unsupported file format: {path}")

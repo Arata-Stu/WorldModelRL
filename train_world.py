@@ -91,7 +91,7 @@ class WorldModelModule(pl.LightningModule):
 
 
 
-@hydra.main(config_path="config", config_name="train_mdn", version_base="1.2")
+@hydra.main(config_path="config", config_name="train_world", version_base="1.2")
 def main(config: DictConfig):
     OmegaConf.to_container(config, resolve=True, throw_on_missing=True)
     print("------ Configuration ------")
@@ -102,7 +102,7 @@ def main(config: DictConfig):
     logger = TensorBoardLogger(save_dir=config.log_dir, name="WorldModel")
 
     # データモジュールの作成
-    data_module =get_data_module(config.data)
+    data_module = get_data_module(config.data)
     data_module.setup()
 
     # データセットから latent_dim, action_dim を取得
