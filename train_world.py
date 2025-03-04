@@ -15,7 +15,7 @@ class WorldModelModule(pl.LightningModule):
     MDN-RNN と RewardPredictor を統合した学習モジュール。
     次状態予測と報酬予測を同時に行う。
     """
-    def __init__(self, cfg: DictConfig, action_dim: int):
+    def __init__(self, cfg: DictConfig, action_dim: int, learning_rate: float = 1e-3, reward_loss_weight: float = 1.0):
         """
         Args:
             mdnrnn_cfg (DictConfig): MDN-RNN の設定（hidden_size, num_layers, num_mixtures など）
@@ -27,8 +27,8 @@ class WorldModelModule(pl.LightningModule):
         """
         super().__init__()
         # self.save_hyperparameters(ignore=['reward_cfg'])
-        self.learning_rate = cfg.learning_rate
-        self.reward_loss_weight = cfg.reward_loss_weight
+        self.learning_rate = learning_rate
+        self.reward_loss_weight = reward_loss_weight
 
         self.model = WorldModel(cfg=cfg, action_dim=action_dim)
 
@@ -101,7 +101,7 @@ def main(config: DictConfig):
     action_dim = sample[1].shape[-1]
 
     # WorldModel を初期化
-    model = WorldModelModule(cfg=config.model, action_dim=action_dim)
+    model = WorldModelModule(cfg=config.model, action_dim=action_dim, learning_rate=config.learning_rate, reward_loss_weight=config.reward_loss_weight)
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=config.save_ckpt_dir,
