@@ -2,6 +2,7 @@ defaults:
   - default
   - model/mdn: ???
   - model/reward: ???
+  - envs: car_racing
   
 model:
   ckpt_path: null
