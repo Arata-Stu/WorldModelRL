@@ -55,7 +55,7 @@ class WorldModelModule(pl.LightningModule):
         pi, mu, sigma, next_z, pred_reward, _ = self(latent_seq, action_seq)
 
         # MDN-RNN の損失（次状態予測誤差）
-        loss_mdn = self.mdn_rnn.loss(target_z, pi, mu, sigma)
+        loss_mdn = self.model.mdn_rnn.loss(target_z, pi, mu, sigma)
         # pred_reward の余分な次元を削除して MSE 損失を計算
         loss_reward = F.mse_loss(pred_reward.squeeze(-1), target_reward)
         loss = loss_mdn + self.reward_loss_weight * loss_reward
@@ -68,7 +68,7 @@ class WorldModelModule(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         latent_seq, action_seq, target_z, target_reward = batch
         pi, mu, sigma, next_z, pred_reward, _ = self(latent_seq, action_seq)
-        loss_mdn = self.mdn_rnn.loss(target_z, pi, mu, sigma)
+        loss_mdn = self.model.mdn_rnn.loss(target_z, pi, mu, sigma)
         loss_reward = F.mse_loss(pred_reward.squeeze(-1), target_reward)
         loss = loss_mdn + self.reward_loss_weight * loss_reward
 
