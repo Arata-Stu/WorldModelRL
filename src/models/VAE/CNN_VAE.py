@@ -39,7 +39,7 @@ class CNN_VAE(BaseVAE):
             out = F.relu(self.enc_conv2(out))
             out = F.relu(self.enc_conv3(out))
             out = F.relu(self.enc_conv4(out))
-            out = out.view(batch_size, -1)
+            out = out.reshape(batch_size, -1)
             
             mu = self.mu(out)
             logvar = self.logvar(out)
